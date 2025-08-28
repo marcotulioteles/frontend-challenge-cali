@@ -1,26 +1,48 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+    --background: #ffffff;
+    --foreground: #171717;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-primary-50: #ffe1f4;
+    --color-primary-100: #ffb1d6;
+    --color-primary-200: #ff7eb9;
+    --color-primary-300: #ff4c9e;
+    --color-primary-400: #ff1a82;
+    --color-primary-500: #e60068;
+    --color-primary-600: #b40051;
+    --color-primary-700: #82003a;
+    --color-primary-800: #500023;
+    --color-primary-900: #20000e;
+    --font-body: var(--font-inter);
+    --font-title: var(--font-manrope);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@layer components {
+    .primary-btn {
+        @apply bg-primary-400 text-lg text-white px-2 py-4 rounded-md w-full hover:bg-primary-700 transition-all duration-500 hover:cursor-pointer;
+    }
+    .input-field {
+        @apply text-base border-b font-normal border-gray-300 px-2 py-4 w-full focus:outline-none focus:border-primary-400 focus:border-b-2;
+    }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--font-inter);
+    font-weight: 300;
+    transition: all 0.3s ease;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-manrope);
+    font-weight: 700;
 }
