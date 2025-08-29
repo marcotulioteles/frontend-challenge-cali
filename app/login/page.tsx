@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default async function Page() {
     return (
         <main className="grid min-h-screen bg-gradient-to-br from-primary-900 from-5% via-primary-400 via-60% to-primary-900 to-100%">
@@ -33,12 +35,12 @@ export default async function Page() {
                         <div>
                             <p className="text-sm text-gray-600">
                                 Don't have an account?{" "}
-                                <a
-                                    href="#"
+                                <Link
+                                    href="/register"
                                     className="text-primary-400 hover:font-medium"
                                 >
                                     Sign up
-                                </a>
+                                </Link>
                             </p>
                         </div>
                     </div>
