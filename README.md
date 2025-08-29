@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 💳 Payment App – Technical Challenge
 
-## Getting Started
+This project is a **simple payment system** built for technical evaluation purposes.  
+It demonstrates **user registration & login**, **role-based access**, and **transaction authorization rules** with a clean, modern frontend (Next.js 15) and Firebase backend.
 
-First, run the development server:
+---
+
+## 🚀 Features
+
+-   **User Registration & Login**
+    -   Users can sign up with name, email, and password.
+    -   Auth handled by **Firebase Authentication**.
+-   **Transactions**
+    -   Create a financial transaction with amount, card number, holder name, expiry, and CVV.
+    -   The backend applies rules:
+        -   Amount ≤ R$ 1.000,00 → **APPROVED** ✅
+        -   Amount > R$ 1.000,00 → **DECLINED** ❌
+    -   Stores only safe card info (last4, brand, expiry). **PAN and CVV are never persisted.**
+-   **Role-based Access**
+    -   Normal users see **only their own** transactions.
+    -   Admins see **all transactions** in the system.
+-   **Secure Backend**
+    -   Built with Next.js API routes + Firebase Admin SDK.
+    -   Firebase ID tokens (JWT) verified on every API call.
+-   **Responsive UI**
+    -   Forms and tables styled with Tailwind CSS.
+-   **Dockerized**
+    -   Runs locally with Docker + Docker Compose.
+
+---
+
+## 🛠️ Tech Stack
+
+-   **Frontend/Backend:** Next.js 15 (App Router)
+-   **Auth & DB:** Firebase (Authentication, Firestore)
+-   **Admin SDK:** Firebase Service Account (ADC)
+-   **Styling:** Tailwind CSS
+-   **Forms & Validation:** React Hook Form + Zod
+-   **Containerization:** Docker, Docker Compose
+
+---
+
+## 🖥️ How to run this project
+
+### ⚙️ Requirements
+
+-   [Docker](https://www.docker.com/) and Docker Compose installed on your machine.
+
+-   Firebase configuration files and credentials (not included in this repository for security reasons).
+
+### Steps
+
+1. **Clone the repository**
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/marcotulioteles/frontend-challenge-cali.git
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+```bash
+cd frontend-challenge-cali
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+2. **Obtain Firebase credentials**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Some files are not included in the repository for security reasons. Please contact Marco Reis (📧 marcotuliod3v@gmail.com) to request the Firebase configuration and service account keys required to run the project locally.
 
-## Learn More
+3. **Create the secrets folder**
 
-To learn more about Next.js, take a look at the following resources:
+-   At the project root, create a folder called `secrets/`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+-   Inside it, create a file named `firebase-admin.json`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+-   Paste the JSON service account key provided by the developer into this file.
 
-## Deploy on Vercel
+4. **Configure environment variables**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+-   Copy the contents provided by the developer into the `.env.example` file at the root of the project, then rename the file to `env.local`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+5. **Run the project with Docker**
+
+```bash
+docker compose up --build
+```
+
+6. **Access the application**
+
+Once the containers are up, the app will be available at:
+`http://localhost:3000`

@@ -1,0 +1,15 @@
+services:
+    web:
+        build: .
+        command: npm run dev
+        ports:
+            - "3000:3000"
+        env_file: env.local
+        environment:
+            GOOGLE_APPLICATION_CREDENTIALS: /secrets/firebase-admin.json
+            FB_PROJECT_ID: payment-app-cali
+        volumes:
+            - .:/app
+            - /app/node_modules
+            - ./secrets/firebase-admin.json:/secrets/firebase-admin.json:ro
+        restart: unless-stopped

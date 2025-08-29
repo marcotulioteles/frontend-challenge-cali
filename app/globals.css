@@ -24,7 +24,7 @@
 
 @layer components {
     .primary-btn {
-        @apply bg-primary-400 text-lg text-white px-2 py-4 rounded-md w-full hover:bg-primary-600 transition-all duration-500 hover:cursor-pointer;
+        @apply bg-primary-400 text-lg text-white px-2 py-4 rounded-md w-full hover:bg-primary-600 transition-all duration-500 hover:cursor-pointer outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-400;
     }
     .input-field {
         @apply text-base border-b font-normal border-gray-300 px-2 py-4 w-full focus:outline-none focus:border-primary-400 focus:border-b-2;
