@@ -25,7 +25,7 @@ export default function Page() {
         reset,
     } = useForm<FormValues>({
         resolver: zodResolver(schema),
-        mode: "onSubmit",
+        mode: "onChange",
         defaultValues: {
             email: "",
             password: "",
