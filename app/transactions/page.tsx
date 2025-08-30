@@ -1,5 +1,6 @@
 import AddTransactionBtn from "../../components/shared/add-transaction-btn";
 import TransactionTable from "@/components/shared/transaction-table";
+import HeaderLogoutBtn from "@/components/shared/header-logout-btn";
 
 const transactions = [
     {
@@ -96,9 +97,7 @@ export default async function Page() {
                         <div className="w-10 h-10 flex items-center justify-center rounded-full font-light bg-gray-200 text-primary-400">
                             AD
                         </div>
-                        <button className="text-sm text-white" type="button">
-                            Logout
-                        </button>
+                        <HeaderLogoutBtn />
                     </div>
                 </div>
             </header>
