@@ -4,7 +4,14 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
+import {
+    CircleNotchIcon,
+    EnvelopeSimpleIcon,
+    LockSimpleIcon,
+    PasswordIcon,
+    UserIcon,
+    WarningCircleIcon,
+} from "@phosphor-icons/react/dist/ssr";
 import { useRouter } from "next/navigation";
 
 const schema = z
@@ -67,9 +74,15 @@ export default function Page() {
                     Sign Up
                 </h1>
                 <div className="grid gap-6">
-                    <div className="text-left space-y-1">
+                    <div className="text-left space-y-1 relative">
+                        <UserIcon
+                            className={`absolute top-4 left-0 text-gray-400 ${
+                                errors.fullName && "text-red-500"
+                            }`}
+                            size={24}
+                        />
                         <input
-                            className={`input-field ${
+                            className={`input-field pl-8 ${
                                 errors.fullName
                                     ? "text-red-500 placeholder:text-red-500"
                                     : ""
@@ -80,15 +93,22 @@ export default function Page() {
                             aria-invalid={!!errors.fullName}
                         />
                         {errors.fullName && (
-                            <p className="text-xs text-red-600">
+                            <p className="flex items-center gap-1 text-xs text-red-500">
+                                <WarningCircleIcon size={16} />
                                 {errors.fullName.message}
                             </p>
                         )}
                     </div>
 
-                    <div className="text-left space-y-1">
+                    <div className="text-left space-y-1 relative">
+                        <EnvelopeSimpleIcon
+                            className={`absolute top-4 left-0 text-gray-400 ${
+                                errors.email && "text-red-500"
+                            }`}
+                            size={24}
+                        />
                         <input
-                            className={`input-field ${
+                            className={`input-field pl-8 ${
                                 errors.email
                                     ? "text-red-500 placeholder:text-red-500"
                                     : ""
@@ -99,15 +119,22 @@ export default function Page() {
                             aria-invalid={!!errors.email}
                         />
                         {errors.email && (
-                            <p className="text-xs text-red-600">
+                            <p className="flex items-center gap-1 text-xs text-red-500">
+                                <WarningCircleIcon size={16} />
                                 {errors.email.message}
                             </p>
                         )}
                     </div>
 
-                    <div className="text-left space-y-1">
+                    <div className="text-left space-y-1 relative">
+                        <LockSimpleIcon
+                            className={`absolute top-4 left-0 text-gray-400 ${
+                                errors.password && "text-red-500"
+                            }`}
+                            size={24}
+                        />
                         <input
-                            className={`input-field ${
+                            className={`input-field pl-8 ${
                                 errors.password
                                     ? "text-red-500 placeholder:text-red-500"
                                     : ""
@@ -119,15 +146,22 @@ export default function Page() {
                             autoComplete="new-password"
                         />
                         {errors.password && (
-                            <p className="text-xs text-red-600">
+                            <p className="flex items-center gap-1 text-xs text-red-500">
+                                <WarningCircleIcon size={16} />
                                 {errors.password.message}
                             </p>
                         )}
                     </div>
 
-                    <div className="text-left space-y-1">
+                    <div className="text-left space-y-1 relative">
+                        <PasswordIcon
+                            className={`absolute top-4 left-0 text-gray-400 ${
+                                errors.confirmPassword && "text-red-500"
+                            }`}
+                            size={24}
+                        />
                         <input
-                            className={`input-field ${
+                            className={`input-field pl-8 ${
                                 errors.confirmPassword
                                     ? "text-red-500 placeholder:text-red-500"
                                     : ""
@@ -139,7 +173,8 @@ export default function Page() {
                             autoComplete="new-password"
                         />
                         {errors.confirmPassword && (
-                            <p className="text-xs text-red-600">
+                            <p className="flex items-center gap-1 text-xs text-red-500">
+                                <WarningCircleIcon size={16} />
                                 {errors.confirmPassword.message}
                             </p>
                         )}

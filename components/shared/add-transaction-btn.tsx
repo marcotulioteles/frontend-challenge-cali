@@ -2,11 +2,16 @@
 
 import { useState } from "react";
 import Modal from "../ui/modal";
-import { CreditCardIcon } from "@phosphor-icons/react/dist/ssr";
+import {
+    CreditCardIcon,
+    PlusIcon,
+    WarningCircleIcon,
+} from "@phosphor-icons/react/dist/ssr";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useHookFormMask } from "use-mask-input";
+import InputField from "../ui/input-field";
 
 const schema = z.object({
     cardNumber: z
@@ -67,7 +72,10 @@ export default function AddTransactionBtn() {
 
     const inputErr = (field?: { message?: string }) =>
         field ? (
-            <p className="text-xs text-red-500 mt-1">{field.message}</p>
+            <p className="flex items-center gap-1 text-xs text-red-500 mt-1">
+                <WarningCircleIcon size={16} />
+                {field.message}
+            </p>
         ) : null;
 
     const handleCloseDialog = () => {
@@ -89,101 +97,82 @@ export default function AddTransactionBtn() {
                 <h1 className="font-title text-2xl mb-6">Create Transaction</h1>
                 <form onSubmit={handleSubmit(onSubmit)} noValidate>
                     <div className="max-w-sm space-y-6">
-                        <div>
-                            <input
+                        <InputField
+                            name="cardNumber"
+                            registerWithMask={registerWithMask}
+                            mask={["9999 9999 9999 9999"]}
+                            error={errors.cardNumber}
+                            placeholder="0000 0000 0000 0000"
+                            type="text"
+                            icon="CreditCardIcon"
+                            inputMode="numeric"
+                        />
+                        <InputField
+                            name="cardholderName"
+                            register={register}
+                            registerOptions={{
+                                setValueAs: (v) => (v ? v.toUpperCase() : ""),
+                            }}
+                            error={errors.cardholderName}
+                            placeholder="cardholder name"
+                            type="text"
+                            icon="UserIcon"
+                            inputMode="numeric"
+                            className="placeholder: capitalize"
+                        />
+                        <div className="grid md:grid-cols-2 gap-4">
+                            <InputField
+                                name="expirationDate"
+                                registerWithMask={registerWithMask}
+                                mask={["99/99"]}
+                                error={errors.expirationDate}
+                                placeholder="MM/YY"
                                 type="text"
-                                className={`input-field ${
-                                    errors.cardNumber && "border-red-500"
-                                }`}
-                                placeholder="0000 0000 0000 0000"
-                                {...registerWithMask("cardNumber", [
-                                    "9999 9999 9999 9999",
-                                ])}
+                                icon="CalendarCheckIcon"
                                 inputMode="numeric"
                             />
-                            {inputErr(errors.cardNumber)}
-                        </div>
-                        <div>
-                            <input
+                            <InputField
+                                name="securityCode"
+                                registerWithMask={registerWithMask}
+                                mask={["999", "9999"]}
+                                error={errors.securityCode}
+                                placeholder="Security Code"
                                 type="text"
-                                className={`input-field placeholder:capitalize ${
-                                    errors.cardholderName && "border-red-500"
-                                }`}
-                                placeholder="Cardholder Name"
-                                style={{ textTransform: "uppercase" }}
-                                {...register("cardholderName", {
-                                    setValueAs: (v) =>
-                                        v ? v.toUpperCase() : "",
-                                })}
+                                icon="PasswordIcon"
+                                inputMode="numeric"
                             />
-                            {inputErr(errors.cardholderName)}
                         </div>
-                        <div className="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <input
-                                    type="text"
-                                    className={`input-field ${
-                                        errors.expirationDate &&
-                                        "border-red-500"
-                                    }`}
-                                    placeholder="MM/YY"
-                                    {...registerWithMask("expirationDate", [
-                                        "99/99",
-                                    ])}
-                                />
-                                {inputErr(errors.expirationDate)}
-                            </div>
-                            <div>
-                                <input
-                                    type="text"
-                                    className={`input-field ${
-                                        errors.securityCode && "border-red-500"
-                                    }`}
-                                    placeholder="Security Code"
-                                    {...registerWithMask("securityCode", [
-                                        "999",
-                                        "9999",
-                                    ])}
-                                    inputMode="numeric"
-                                />
-                                {inputErr(errors.securityCode)}
-                            </div>
-                        </div>
-                        <div>
-                            <input
-                                type="text"
-                                className={`input-field ${
-                                    errors.amount && "border-red-500"
-                                }`}
-                                placeholder="R$ 0,00"
-                                {...registerWithMask(
-                                    "amount",
-                                    [
-                                        "R$ 9,99",
-                                        "R$ 99,99",
-                                        "R$ 999,99",
-                                        "R$ 9.999,99",
-                                        "R$ 99.999,99",
-                                        "R$ 999.999,99",
-                                        "R$ 9.999.999,99",
-                                        "R$ 99.999.999,99",
-                                        "R$ 999.999.999,99",
-                                        "R$ 9.999.999.999,99",
-                                    ],
-                                    {
-                                        regex: "^R$s?(?:0|[1-9]d{0,2}|[1-9]d{0,2}.d{3}|[1-9]d{0,2}.d{3}.d{3}|[1-9]d.d{3}.d{3}.d{3}),d{2}$",
-                                    }
-                                )}
-                            />
-                            {inputErr(errors.amount)}
-                        </div>
+                        <InputField
+                            name="amount"
+                            registerWithMask={registerWithMask}
+                            mask={[
+                                "R$ 9,99",
+                                "R$ 99,99",
+                                "R$ 999,99",
+                                "R$ 9.999,99",
+                                "R$ 99.999,99",
+                                "R$ 999.999,99",
+                                "R$ 9.999.999,99",
+                                "R$ 99.999.999,99",
+                                "R$ 999.999.999,99",
+                                "R$ 9.999.999.999,99",
+                            ]}
+                            maskOptions={{
+                                regex: "^R$s?(?:0|[1-9]d{0,2}|[1-9]d{0,2}.d{3}|[1-9]d{0,2}.d{3}.d{3}|[1-9]d.d{3}.d{3}.d{3}),d{2}$",
+                            }}
+                            error={errors.amount}
+                            placeholder="R$ 0,00"
+                            type="text"
+                            icon="MoneyWavyIcon"
+                            inputMode="numeric"
+                        />
                     </div>
                     <button
                         type="submit"
                         disabled={isSubmitting}
                         className="primary-btn font-medium mt-6 flex items-center justify-center disabled:opacity-60"
                     >
-                        <CreditCardIcon className="mr-2" size={28} />
+                        <PlusIcon className="mr-2" size={28} />
                         {isSubmitting ? "Saving..." : "Add Transaction"}
                     </button>
                 </form>

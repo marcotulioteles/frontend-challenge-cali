@@ -6,6 +6,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 import { useRouter } from "next/navigation";
+import InputField from "@/components/ui/input-field";
 
 const schema = z.object({
     email: z.string().email("Please enter a valid email"),
@@ -62,42 +63,22 @@ export default function Page() {
                         Login
                     </h1>
                     <div className="grid gap-6">
-                        <div className="flex flex-col gap-1">
-                            <input
-                                className={`input-field ${
-                                    errors.email
-                                        ? "text-red-500 placeholder:text-red-500"
-                                        : ""
-                                }`}
-                                type="email"
-                                placeholder="Email"
-                                autoComplete="email"
-                                {...register("email")}
-                            />
-                            {errors.email && (
-                                <p className="text-xs text-red-500">
-                                    {errors.email.message}
-                                </p>
-                            )}
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <input
-                                className={`input-field ${
-                                    errors.password
-                                        ? "text-red-500 placeholder:text-red-500"
-                                        : ""
-                                }`}
-                                type="password"
-                                placeholder="Password"
-                                autoComplete="current-password"
-                                {...register("password")}
-                            />
-                            {errors.password && (
-                                <p className="text-xs text-red-500">
-                                    {errors.password.message}
-                                </p>
-                            )}
-                        </div>
+                        <InputField
+                            name="email"
+                            register={register}
+                            error={errors.email}
+                            placeholder="Email"
+                            type="email"
+                            icon="EnvelopeSimpleIcon"
+                        />
+                        <InputField
+                            name="password"
+                            register={register}
+                            error={errors.password}
+                            placeholder="Password"
+                            type="password"
+                            icon="LockSimpleIcon"
+                        />
                         <button
                             className="flex items-center justify-center primary-btn mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
                             type="submit"
