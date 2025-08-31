@@ -1,6 +1,7 @@
 import AddTransactionBtn from "../../../components/shared/add-transaction-btn";
 import TransactionTable from "@/components/shared/transaction-table";
 import HeaderLogoutBtn from "@/components/shared/header-logout-btn";
+import AdminSearchTransaction from "@/components/shared/admin-search-transaction";
 
 const transactions = [
     {
@@ -102,7 +103,8 @@ export default async function Page() {
                 </div>
             </header>
             <AddTransactionBtn />
-            <TransactionTable transactions={transactions} />
+            <AdminSearchTransaction />
+            <TransactionTable transactions={[]} />
         </main>
     );
 }
