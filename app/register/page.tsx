@@ -13,11 +13,12 @@ import {
     WarningCircleIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { useRouter } from "next/navigation";
+import { registerWithEmailAndPassword } from "@/lib/actions/register";
 
 const schema = z
     .object({
         fullName: z.string().min(2, "Full name must be at least 2 characters"),
-        email: z.string().email("Invalid email address"),
+        email: z.email("Invalid email address"),
         password: z
             .string()
             .min(6, "Password must be at least 6 characters")
@@ -54,10 +55,15 @@ export default function Page() {
 
     const onSubmit = async (data: FormValues) => {
         try {
-            await new Promise((r) => setTimeout(r, 800));
-            console.log("Form submit", data);
-            reset();
-            router.push("/transactions");
+            const res = await registerWithEmailAndPassword(
+                data.email,
+                data.password,
+                data.fullName
+            );
+            if (res) {
+                router.push("/transactions");
+                reset();
+            }
         } catch (e) {
             console.error(e);
         }

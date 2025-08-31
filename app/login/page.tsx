@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 import { useRouter } from "next/navigation";
 import InputField from "@/components/ui/input-field";
+import { loginWithEmailAndPassword } from "@/lib/actions/login";
 
 const schema = z.object({
     email: z.string().email("Please enter a valid email"),
@@ -36,11 +37,13 @@ export default function Page() {
     const router = useRouter();
 
     const onSubmit = async (data: FormValues) => {
-        // Replace with real auth call
-        console.log("Submitting:", data);
-        await new Promise((r) => setTimeout(r, 600));
-        reset();
-        router.push("/transactions");
+        try {
+            await loginWithEmailAndPassword(data.email, data.password);
+            reset();
+            router.push("/transactions");
+        } catch (error) {
+            console.error("Login failed:", error);
+        }
     };
 
     return (
