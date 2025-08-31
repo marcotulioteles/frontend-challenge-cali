@@ -5,6 +5,7 @@ import {
     App,
 } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
+import { getDatabase } from "firebase-admin/database";
 import fs from "fs";
 import path from "path";
 
@@ -33,3 +34,4 @@ const adminApp: App =
         });
 
 export const adminAuth = getAuth(adminApp);
+export const adminDb = getDatabase(adminApp);

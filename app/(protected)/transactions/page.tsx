@@ -1,4 +1,4 @@
-import AddTransactionBtn from "../../components/shared/add-transaction-btn";
+import AddTransactionBtn from "../../../components/shared/add-transaction-btn";
 import TransactionTable from "@/components/shared/transaction-table";
 import HeaderLogoutBtn from "@/components/shared/header-logout-btn";
 

@@ -39,8 +39,12 @@ export default function Page() {
     const onSubmit = async (data: FormValues) => {
         try {
             await loginWithEmailAndPassword(data.email, data.password);
+            await fetch("/api/users/me/roles", {
+                credentials: "include",
+                cache: "no-store",
+            });
+            router.replace("/transactions");
             reset();
-            router.push("/transactions");
         } catch (error) {
             console.error("Login failed:", error);
         }
