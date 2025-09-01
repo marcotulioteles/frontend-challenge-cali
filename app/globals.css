@@ -20,6 +20,18 @@
     --color-primary-900: #20000e;
     --font-body: var(--font-inter);
     --font-title: var(--font-manrope);
+    --animate-slideDown: slideDown 200ms ease-out;
+
+    @keyframes slideDown {
+        from {
+            transform: translateY(-8px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
 }
 
 @layer components {

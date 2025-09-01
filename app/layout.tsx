@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Manrope } from "next/font/google";
 import "./globals.css";
+import { NotificationsProvider } from "@/providers/notifications-provider";
 
 const inter = Inter({
     variable: "--font-inter",
@@ -27,7 +28,7 @@ export default function RootLayout({
             <body
                 className={`${inter.variable} ${manrope.variable} antialiased`}
             >
-                {children}
+                <NotificationsProvider>{children}</NotificationsProvider>
             </body>
         </html>
     );

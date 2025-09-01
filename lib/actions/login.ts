@@ -4,6 +4,7 @@ import { HttpMethods } from "@/types/http-methods.enum";
 import { httpRequest } from "@/helpers/api/http-request";
 import { API_URL_MAP } from "@/helpers/api/api-url-map";
 import { getDatabase, ref, get } from "firebase/database";
+import { enqueueFlash } from "../flash-notification/flash-notification";
 
 export async function loginWithEmailAndPassword(
     email: string,
@@ -28,9 +29,8 @@ export async function loginWithEmailAndPassword(
 
         return credentials;
     } catch (err: any) {
-        const errorCode = err?.code ?? "auth/unknown";
-        const errorMessage = mapAuthError(errorCode);
-        throw new Error(errorMessage);
+        console.log("[ERROR] loginWithEmailAndPassword: ", { err });
+        throw err;
     }
 }
 

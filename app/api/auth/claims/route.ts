@@ -15,7 +15,6 @@ export async function POST(req: NextRequest) {
 
         return new Response(JSON.stringify({ message: "Claims set successfully" }), { status: 200 });
     } catch (error: any) {
-        console.error("Error setting claims:", error);
         return new Response(JSON.stringify({ error: "Failed to set claims", details: error?.message }), { status: 500 });
     }
 }

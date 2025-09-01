@@ -12,6 +12,7 @@ import { HttpMethods } from "@/types/http-methods.enum";
 import { httpRequest } from "@/helpers/api/http-request";
 import { Transaction } from "@/types/transaction.model";
 import { API_URL_MAP } from "@/helpers/api/api-url-map";
+import { useNotifications } from "@/providers/notifications-provider";
 
 const schema = z.object({
     cardNumber: z
@@ -44,6 +45,7 @@ type FormValues = z.infer<typeof schema>;
 
 export default function AddTransactionBtn() {
     const [isOpen, setIsOpen] = useState<boolean>(false);
+    const { notify } = useNotifications();
 
     const {
         register,
@@ -88,9 +90,14 @@ export default function AddTransactionBtn() {
             if (res) {
                 reset();
                 setIsOpen(false);
+                notify({
+                    type: "success",
+                    message: "Transaction created successfully!",
+                    title: "Success",
+                });
             }
         } catch (error) {
-            console.error("Error submitting transaction:", error);
+            throw error;
         }
     };
 

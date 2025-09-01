@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getServerSession } from "@/lib/auth/auth-server";
 import { AuthProvider } from "@/providers/auth-provider";
+import { NotificationsProvider } from "@/providers/notifications-provider";
 
 export const metadata = { title: "App" };
 
@@ -21,7 +22,7 @@ export default async function ProtectedLayout({
                 userDisplayName: session.userDisplayName,
             }}
         >
-            {children}
+            <NotificationsProvider>{children}</NotificationsProvider>
         </AuthProvider>
     );
 }

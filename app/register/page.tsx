@@ -14,6 +14,8 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import { useRouter } from "next/navigation";
 import { registerWithEmailAndPassword } from "@/lib/actions/register";
+import { useNotifications } from "@/providers/notifications-provider";
+import { FirebaseError } from "firebase-admin";
 
 const schema = z
     .object({
@@ -35,6 +37,8 @@ const schema = z
 type FormValues = z.infer<typeof schema>;
 
 export default function Page() {
+    const { notify } = useNotifications();
+
     const {
         register,
         handleSubmit,
@@ -64,8 +68,18 @@ export default function Page() {
                 router.push("/transactions");
                 reset();
             }
-        } catch (e) {
-            console.error(e);
+        } catch (error) {
+            const firebaseError = error as FirebaseError;
+            const msg =
+                firebaseError?.code === "auth/email-already-in-use"
+                    ? "Email already in use, please use a different email."
+                    : "Sign up failed. Please try again, later. Sorry for the inconvenience.";
+            notify({
+                type: "error",
+                message: msg,
+                duration: 5000,
+                title: "Sign Up Error",
+            });
         }
     };
 

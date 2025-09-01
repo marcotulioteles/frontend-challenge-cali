@@ -9,6 +9,9 @@ import { useRouter } from "next/navigation";
 import InputField from "@/components/ui/input-field";
 import { loginWithEmailAndPassword } from "@/lib/actions/login";
 import { API_URL_MAP } from "@/helpers/api/api-url-map";
+import { enqueueFlash } from "@/lib/flash-notification/flash-notification";
+import { useNotifications } from "@/providers/notifications-provider";
+import { FirebaseError } from "firebase/app";
 
 const schema = z.object({
     email: z.string().email("Please enter a valid email"),
@@ -36,6 +39,7 @@ export default function Page() {
     });
 
     const router = useRouter();
+    const { notify } = useNotifications();
 
     const onSubmit = async (data: FormValues) => {
         try {
@@ -46,8 +50,18 @@ export default function Page() {
             });
             router.replace("/transactions");
             reset();
-        } catch (error) {
-            console.error("Login failed:", error);
+        } catch (error: unknown) {
+            const firebaseError = error as FirebaseError;
+            const msg =
+                firebaseError?.code === "auth/invalid-credential"
+                    ? "Invalid credentials, please check your email and password."
+                    : "Error logging in, please try again later.";
+            notify({
+                type: "error",
+                message: msg,
+                duration: 5000,
+                title: "Login Error",
+            });
         }
     };
 

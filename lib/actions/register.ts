@@ -44,13 +44,7 @@ export async function registerWithEmailAndPassword(
             ok: true,
             user: { uid: user.uid, email: user.email, displayName: user.displayName },
         };
-    } catch (err: any) {
-        const code = err?.code ?? "";
-        const friendly =
-            code === "auth/email-already-in-use" ? "This email is already registered."
-                : code === "auth/invalid-email" ? "The email address is invalid."
-                    : code === "auth/weak-password" ? "Password is too weak."
-                        : err?.message || "Registration failed.";
-        return { ok: false, error: friendly };
+    } catch (error) {
+        throw error;
     }
 }

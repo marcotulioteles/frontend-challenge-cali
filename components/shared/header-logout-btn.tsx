@@ -8,11 +8,13 @@ import { useRouter } from "next/navigation";
 import Modal from "../ui/modal";
 import { useState } from "react";
 import { DynamicPhosphorIcon } from "./dynamic-icon";
+import { useNotifications } from "@/providers/notifications-provider";
 
 export default function HeaderLogoutBtn() {
     const router = useRouter();
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
+    const { notify } = useNotifications();
 
     const handleLogout = async () => {
         try {
@@ -25,7 +27,12 @@ export default function HeaderLogoutBtn() {
             router.replace("/login");
             router.refresh();
         } catch (error) {
-            console.error("Logout failed:", error);
+            notify({
+                type: "error",
+                message: "Logout failed. Please try again later.",
+                duration: 5000,
+                title: "Logout Error",
+            });
         } finally {
             setLoading(false);
         }

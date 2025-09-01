@@ -159,7 +159,6 @@ export async function GET(req: NextRequest) {
             err?.errorInfo?.message ||
             err?.message ||
             (typeof err === "string" ? err : "Internal error");
-        console.error("GET /api/transactions failed:", msg, err);
         return NextResponse.json({ error: "Internal error", detail: msg }, { status: 500 });
     }
 }
