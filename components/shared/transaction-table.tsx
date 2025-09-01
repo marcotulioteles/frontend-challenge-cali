@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { DynamicPhosphorIcon } from "./dynamic-icon";
 import { TransactionStatus } from "@/types/transaction.model";
 import { API_URL_MAP } from "@/helpers/api/api-url-map";
@@ -60,23 +60,11 @@ export default function TransactionTable() {
         fetchTransactions();
     }, []);
 
-    // Apply live updates only once real live data arrives to avoid clearing fetched data with an empty array
-    const hasAppliedLiveData = useRef(false);
     useEffect(() => {
-        if (liveLoading) return;
-        // First time: only replace if live data has something (prevent wiping fetched data with empty array)
-        if (!hasAppliedLiveData.current) {
-            if (updatedTransactions.length > 0) {
-                setTransactions(updatedTransactions);
-                hasAppliedLiveData.current = true;
-            }
-            return;
+        // Always update (even when empty) after live loading finishes
+        if (!liveLoading) {
+            setTransactions(updatedTransactions);
         }
-
-        console.log("[LOG] updatedTransactions: ", { updatedTransactions });
-
-        // Subsequent updates: always sync
-        setTransactions(updatedTransactions);
     }, [updatedTransactions, liveLoading]);
 
     return (

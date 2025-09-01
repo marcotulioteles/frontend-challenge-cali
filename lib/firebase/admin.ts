@@ -10,16 +10,44 @@ import fs from "fs";
 import path from "path";
 
 function loadServiceAccount() {
-    const saFromEnv = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-    if (saFromEnv) return JSON.parse(saFromEnv);
+    const envVar =
+        process.env.FIREBASE_SERVICE_ACCOUNT_KEY ||
+        process.env.FIREBASE_ACCOUNT_KEY;
+
+    if (envVar) {
+        let raw = envVar.trim();
+        if (!raw.startsWith("{")) {
+            try {
+                raw = Buffer.from(raw, "base64").toString("utf-8").trim();
+            } catch {
+                throw new Error("Failed to base64-decode FIREBASE_SERVICE_ACCOUNT_KEY");
+            }
+        }
+
+        let parsed;
+        try {
+            parsed = JSON.parse(raw);
+        } catch (e) {
+            throw new Error("FIREBASE_SERVICE_ACCOUNT_KEY is not valid JSON");
+        }
+
+        if (parsed.private_key) {
+            parsed.private_key = parsed.private_key.replace(/\\n/g, "\n");
+        }
+        return parsed;
+    }
 
     const localPath = path.join(process.cwd(), "secrets/firebase-admin.json");
     if (fs.existsSync(localPath)) {
-        return JSON.parse(fs.readFileSync(localPath, "utf-8"));
+        const parsed = JSON.parse(fs.readFileSync(localPath, "utf-8"));
+        if (parsed.private_key) {
+            parsed.private_key = parsed.private_key.replace(/\\n/g, "\n");
+        }
+        return parsed;
     }
 
     throw new Error(
-        "Service account not found. Set FIREBASE_SERVICE_ACCOUNT_KEY or add secrets/firebase-admin.json"
+        "Service account not found. Set FIREBASE_SERVICE_ACCOUNT_KEY (or FIREBASE_ACCOUNT_KEY) or add secrets/firebase-admin.json"
     );
 }
 

@@ -6,7 +6,7 @@ services:
                          npm run dev"
         ports:
             - "3000:3000"
-        env_file: env.local
+        env_file: .env.local
         environment:
             GOOGLE_APPLICATION_CREDENTIALS: /secrets/firebase-admin.json
             FB_PROJECT_ID: payment-app-cali
