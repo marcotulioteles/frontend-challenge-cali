@@ -17,12 +17,18 @@ type AuthState = {
     email: string | null;
     roles: string[];
     loading: boolean;
+    userDisplayName?: { firstName?: string | null; lastName?: string | null };
     refreshRoles: () => Promise<void>;
 };
 
 const Context = createContext<AuthState | null>(null);
 
-type Initial = { uid: string; email: string | null; roles: string[] };
+type Initial = {
+    uid: string;
+    email: string | null;
+    roles: string[];
+    userDisplayName?: { firstName?: string | null; lastName?: string | null };
+};
 
 export function AuthProvider({
     initial,
@@ -34,6 +40,9 @@ export function AuthProvider({
     const [uid, setUid] = useState(initial.uid);
     const [email, setEmail] = useState(initial.email);
     const [roles, setRoles] = useState(initial.roles);
+    const [userDisplayName, setUserDisplayName] = useState(
+        initial.userDisplayName
+    );
     const [loading, setLoading] = useState(false);
     const firstMount = useRef(true);
 
@@ -69,6 +78,19 @@ export function AuthProvider({
             if (newUid !== uid) {
                 setUid(newUid);
                 setEmail(u?.email ?? null);
+                setUserDisplayName(
+                    u?.displayName
+                        ? {
+                              firstName: u.displayName
+                                  .split(" ")[0]
+                                  .toUpperCase(),
+                              lastName: u.displayName
+                                  .split(" ")
+                                  .pop()
+                                  ?.toUpperCase(),
+                          }
+                        : {}
+                );
                 await refreshRoles();
             }
             firstMount.current = false;
@@ -77,8 +99,8 @@ export function AuthProvider({
     }, [uid]);
 
     const value = useMemo(
-        () => ({ uid, email, roles, loading, refreshRoles }),
-        [uid, email, roles, loading]
+        () => ({ uid, email, roles, loading, refreshRoles, userDisplayName }),
+        [uid, email, roles, userDisplayName, loading]
     );
 
     return <Context.Provider value={value}>{children}</Context.Provider>;

@@ -17,6 +17,10 @@ export async function getServerUser() {
 export type ServerSession = {
     uid: string;
     email?: string | null;
+    userDisplayName?: {
+        firstName?: string | null;
+        lastName?: string | null;
+    };
     roles: string[];
 };
 
@@ -32,6 +36,10 @@ export async function getServerSession(): Promise<ServerSession | null> {
         const dbRoles: string[] = snap.exists() ? snap.val() : [];
 
         return {
+            userDisplayName: {
+                firstName: decoded.name ? decoded.name.split(" ")[0].toUpperCase() : null,
+                lastName: decoded.name ? decoded.name.split(" ").pop()?.toUpperCase() : null,
+            },
             uid: decoded.uid,
             email: decoded.email ?? null,
             roles: dbRoles.length ? dbRoles : [],

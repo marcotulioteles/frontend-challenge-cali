@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { DynamicPhosphorIcon } from "./dynamic-icon";
-import AltPagination from "../ui/alt-pagination";
 import { TransactionStatus } from "@/types/transaction.model";
 import { API_URL_MAP } from "@/helpers/api/api-url-map";
 import LoadingContent from "./loading-content";
+import { useLiveTransactions } from "@/hooks/userLiveTransactions";
+import { useAuth } from "@/providers/auth-provider";
+import { isAdmin } from "@/helpers/shared/is-admin";
 
 type TransactionItem = {
     id: string;
@@ -20,28 +22,24 @@ type TransactionItem = {
     createdAt: number;
 };
 
-type Cursor = { beforeTs: string; beforeId: string } | null;
-
 export default function TransactionTable() {
-    const pageSize = 20;
-
     const [transactions, setTransactions] = useState<TransactionItem[]>([]);
-    const [total, setTotal] = useState(0);
-    const [nextCursor, setNextCursor] = useState<Cursor>(null);
-    const [history, setHistory] = useState<Cursor[]>([null]); // first page has null cursor
-    const [pageIdx, setPageIdx] = useState(0); // 0-based index in history
-    const currentPage = pageIdx + 1;
+    const { roles, uid: userId } = useAuth();
+    const { updatedTransactions, loading: liveLoading } = useLiveTransactions(
+        isAdmin(roles)
+            ? { mode: "admin", pageSize: 100 }
+            : { mode: "user", uid: userId, pageSize: 100 }
+    );
 
     const [loading, setLoading] = useState(true);
 
-    async function fetchPage(cursor: Cursor) {
+    async function fetchTransactions() {
         setLoading(true);
         try {
             const querySearch = new URLSearchParams({
-                limit: String(pageSize),
+                // keeping a limit to avoid fetching unbounded data
+                limit: "100",
             });
-            if (cursor?.beforeTs) querySearch.set("beforeTs", cursor.beforeTs);
-            if (cursor?.beforeId) querySearch.set("beforeId", cursor.beforeId);
 
             const res = await fetch(
                 `${API_URL_MAP.transactions.list}?${querySearch}`,
@@ -53,34 +51,33 @@ export default function TransactionTable() {
             const data = await res.json();
 
             setTransactions(data.transactions || []);
-            setNextCursor(data.nextCursor || null);
-            setTotal(data.total || 0);
         } finally {
             setLoading(false);
         }
     }
 
     useEffect(() => {
-        fetchPage(history[pageIdx]);
+        fetchTransactions();
     }, []);
 
-    const onNext = async () => {
-        if (!nextCursor) return;
-        const newHistory = history.slice(0, pageIdx + 1).concat(nextCursor);
-        setHistory(newHistory);
-        setPageIdx(pageIdx + 1);
-        await fetchPage(nextCursor);
-    };
+    // Apply live updates only once real live data arrives to avoid clearing fetched data with an empty array
+    const hasAppliedLiveData = useRef(false);
+    useEffect(() => {
+        if (liveLoading) return;
+        // First time: only replace if live data has something (prevent wiping fetched data with empty array)
+        if (!hasAppliedLiveData.current) {
+            if (updatedTransactions.length > 0) {
+                setTransactions(updatedTransactions);
+                hasAppliedLiveData.current = true;
+            }
+            return;
+        }
 
-    const onPrev = async () => {
-        if (pageIdx === 0) return;
-        const newPageIdx = pageIdx - 1;
-        setPageIdx(newPageIdx);
-        await fetchPage(history[newPageIdx]);
-    };
+        console.log("[LOG] updatedTransactions: ", { updatedTransactions });
 
-    const hasPrev = pageIdx > 0;
-    const hasNext = Boolean(nextCursor);
+        // Subsequent updates: always sync
+        setTransactions(updatedTransactions);
+    }, [updatedTransactions, liveLoading]);
 
     return (
         <>
@@ -108,7 +105,7 @@ export default function TransactionTable() {
                                 <strong className="font-light text-xs text-gray-500 block md:hidden">
                                     Card Number
                                 </strong>
-                                {transaction.card.last4}
+                                {`**** **** **** ${transaction.card.last4}`}
                             </span>
                             <span className="tracking-widest">
                                 <strong className="font-light text-xs text-gray-500 block md:hidden">
@@ -158,18 +155,6 @@ export default function TransactionTable() {
                     </div>
                 )}
             </div>
-            {/* <div className="w-full max-w-7xl mx-auto px-6 xl:px-0">
-                <AltPagination
-                    pageSize={pageSize}
-                    total={total}
-                    currentPage={currentPage}
-                    onPrev={onPrev}
-                    onNext={onNext}
-                    hasPrev={hasPrev}
-                    hasNext={hasNext}
-                    loading={loading}
-                />
-            </div> */}
         </>
     );
 }

@@ -8,6 +8,7 @@ export const API_URL_MAP = {
     auth: {
         session: "/api/auth/session",
         logout: "/api/auth/logout",
+        claims: "/api/auth/claims",
     },
     transactions: {
         create: "/api/transactions",

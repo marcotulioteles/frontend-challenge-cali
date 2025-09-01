@@ -13,4 +13,5 @@ export interface Transaction {
     };
     amount: number;
     status: TransactionStatus;
+    createdAt: number;
 }

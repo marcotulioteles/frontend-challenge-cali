@@ -44,16 +44,16 @@ export default function HeaderLogoutBtn() {
                 <div className="flex flex-col gap-3 sm:min-w-sm">
                     <h1 className="text-center text-3xl">Logout</h1>
                     <p>Are you sure you want to logout?</p>
-                    <div className="mt-4 flex justify-end gap-2">
+                    <div className="mt-4 flex flex-col sm:flex-row justify-end gap-2">
                         <button
                             onClick={() => setShowModal(false)}
-                            className="bg-gray-200 text-gray-700 px-4 py-2 rounded w-full hover:bg-gray-300 transition-colors duration-200"
+                            className="primary-btn bg-gray-200 text-gray-700 rounded w-full hover:bg-gray-300 transition-colors duration-200"
                         >
                             Cancel
                         </button>
                         <button
                             onClick={handleLogout}
-                            className="primary-btn px-4"
+                            className="primary-btn px-4 flex items-center justify-center"
                             disabled={loading}
                         >
                             {loading ? (

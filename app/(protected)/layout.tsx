@@ -1,4 +1,3 @@
-// app/(protected)/layout.tsx
 import { redirect } from "next/navigation";
 import { getServerSession } from "@/lib/auth/auth-server";
 import { AuthProvider } from "@/providers/auth-provider";
@@ -19,6 +18,7 @@ export default async function ProtectedLayout({
                 uid: session.uid,
                 email: session.email ?? null,
                 roles: session.roles,
+                userDisplayName: session.userDisplayName,
             }}
         >
             {children}
