@@ -3,89 +3,6 @@ import TransactionTable from "@/components/shared/transaction-table";
 import HeaderLogoutBtn from "@/components/shared/header-logout-btn";
 import AdminSearchTransaction from "@/components/shared/admin-search-transaction";
 
-const transactions = [
-    {
-        id: "transaction-0001",
-        cardholderName: "John Doe",
-        cardNumber: "**** **** **** 1234",
-        expirationDate: "12/25",
-        value: 100.01,
-        status: "approved",
-    },
-    {
-        id: "transaction-0002",
-        cardholderName: "Will Smith",
-        cardNumber: "**** **** **** 5678",
-        expirationDate: "11/27",
-        value: 12188.08,
-        status: "declined",
-    },
-    {
-        id: "transaction-0003",
-        cardholderName: "Christian Bale",
-        cardNumber: "**** **** **** 9012",
-        expirationDate: "09/32",
-        value: 208.12,
-        status: "approved",
-    },
-    {
-        id: "transaction-0004",
-        cardholderName: "Robert Downey Jr.",
-        cardNumber: "**** **** **** 3456",
-        expirationDate: "10/30",
-        value: 555.39,
-        status: "approved",
-    },
-    {
-        id: "transaction-0005",
-        cardholderName: "Chris Hemsworth",
-        cardNumber: "**** **** **** 7890",
-        expirationDate: "08/29",
-        value: 732.01,
-        status: "approved",
-    },
-    {
-        id: "transaction-0006",
-        cardholderName: "Tom Holland",
-        cardNumber: "**** **** **** 1234",
-        expirationDate: "12/25",
-        value: 607.89,
-        status: "approved",
-    },
-    {
-        id: "transaction-0007",
-        cardholderName: "Scarlett Johansson",
-        cardNumber: "**** **** **** 5678",
-        expirationDate: "11/27",
-        value: 1742.99,
-        status: "declined",
-    },
-    {
-        id: "transaction-0008",
-        cardholderName: "Benedict Cumberbatch",
-        cardNumber: "**** **** **** 9012",
-        expirationDate: "09/32",
-        value: 802.76,
-        status: "approved",
-    },
-    {
-        id: "transaction-0009",
-        cardholderName: "Tom Hiddleston",
-        cardNumber: "**** **** **** 3456",
-        expirationDate: "10/30",
-        value: 901.12,
-        status: "approved",
-    },
-    {
-        id: "transaction-0010",
-        cardholderName: "Chris Evans",
-        cardNumber: "**** **** **** 7890",
-        expirationDate: "08/29",
-        value: 999.98,
-        status: "approved",
-    },
-];
-
 export default async function Page() {
     return (
         <main className="flex flex-col items-center min-h-screen w-full">
@@ -104,7 +21,7 @@ export default async function Page() {
             </header>
             <AddTransactionBtn />
             <AdminSearchTransaction />
-            <TransactionTable transactions={[]} />
+            <TransactionTable />
         </main>
     );
 }

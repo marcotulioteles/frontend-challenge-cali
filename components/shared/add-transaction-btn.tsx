@@ -2,16 +2,16 @@
 
 import { useState } from "react";
 import Modal from "../ui/modal";
-import {
-    CreditCardIcon,
-    PlusIcon,
-    WarningCircleIcon,
-} from "@phosphor-icons/react/dist/ssr";
+import { CreditCardIcon, PlusIcon } from "@phosphor-icons/react/dist/ssr";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useHookFormMask } from "use-mask-input";
 import InputField from "../ui/input-field";
+import { HttpMethods } from "@/types/http-methods.enum";
+import { httpRequest } from "@/helpers/api/http-request";
+import { Transaction } from "@/types/transaction.model";
+import { API_URL_MAP } from "@/helpers/api/api-url-map";
 
 const schema = z.object({
     cardNumber: z
@@ -64,19 +64,35 @@ export default function AddTransactionBtn() {
 
     const registerWithMask = useHookFormMask(register);
 
-    const onSubmit = (data: FormValues) => {
-        console.log("Submit transaction:", data);
-        reset();
-        setIsOpen(false);
+    const onSubmit = async (data: FormValues) => {
+        try {
+            const body = {
+                cardholderName: data.cardholderName,
+                card: {
+                    last4: data.cardNumber.slice(-4),
+                    expirationDate: data.expirationDate,
+                },
+                amount: Number(
+                    data.amount
+                        .replace("R$", "")
+                        .replace(/\./g, "")
+                        .replace(",", ".")
+                        .trim()
+                ),
+            } as Omit<Transaction, "id" | "userId" | "status" | "createdAt">;
+            const res = (await httpRequest(
+                API_URL_MAP.transactions.create,
+                HttpMethods.POST,
+                body
+            )) as { transaction?: Transaction };
+            if (res) {
+                reset();
+                setIsOpen(false);
+            }
+        } catch (error) {
+            console.error("Error submitting transaction:", error);
+        }
     };
-
-    const inputErr = (field?: { message?: string }) =>
-        field ? (
-            <p className="flex items-center gap-1 text-xs text-red-500 mt-1">
-                <WarningCircleIcon size={16} />
-                {field.message}
-            </p>
-        ) : null;
 
     const handleCloseDialog = () => {
         reset();

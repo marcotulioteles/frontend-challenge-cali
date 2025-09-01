@@ -8,6 +8,7 @@ import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 import { useRouter } from "next/navigation";
 import InputField from "@/components/ui/input-field";
 import { loginWithEmailAndPassword } from "@/lib/actions/login";
+import { API_URL_MAP } from "@/helpers/api/api-url-map";
 
 const schema = z.object({
     email: z.string().email("Please enter a valid email"),
@@ -39,7 +40,7 @@ export default function Page() {
     const onSubmit = async (data: FormValues) => {
         try {
             await loginWithEmailAndPassword(data.email, data.password);
-            await fetch("/api/users/me/roles", {
+            await fetch(API_URL_MAP.users.me.roles, {
                 credentials: "include",
                 cache: "no-store",
             });

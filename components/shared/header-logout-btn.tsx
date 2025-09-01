@@ -1,20 +1,24 @@
 "use client";
 
+import { API_URL_MAP } from "@/helpers/api/api-url-map";
 import { auth } from "@/lib/firebase/client";
-import { useAuth } from "@/providers/auth-provider";
+import { HttpMethods } from "@/types/http-methods.enum";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
+import Modal from "../ui/modal";
+import { useState } from "react";
+import { DynamicPhosphorIcon } from "./dynamic-icon";
 
 export default function HeaderLogoutBtn() {
-    const { roles } = useAuth();
-    console.log("[LOG] roles: ", { roles });
-
     const router = useRouter();
+    const [showModal, setShowModal] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const handleLogout = async () => {
         try {
-            await fetch("/api/auth/logout", {
-                method: "POST",
+            setLoading(true);
+            await fetch(API_URL_MAP.auth.logout, {
+                method: HttpMethods.POST,
                 credentials: "include",
             });
             await signOut(auth);
@@ -22,16 +26,51 @@ export default function HeaderLogoutBtn() {
             router.refresh();
         } catch (error) {
             console.error("Logout failed:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <button
-            onClick={handleLogout}
-            className="text-sm text-white"
-            type="button"
-        >
-            Logout
-        </button>
+        <>
+            <button
+                onClick={() => setShowModal(true)}
+                className="text-sm text-white"
+                type="button"
+            >
+                Logout
+            </button>
+            <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+                <div className="flex flex-col gap-3 sm:min-w-sm">
+                    <h1 className="text-center text-3xl">Logout</h1>
+                    <p>Are you sure you want to logout?</p>
+                    <div className="mt-4 flex justify-end gap-2">
+                        <button
+                            onClick={() => setShowModal(false)}
+                            className="bg-gray-200 text-gray-700 px-4 py-2 rounded w-full hover:bg-gray-300 transition-colors duration-200"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={handleLogout}
+                            className="primary-btn px-4"
+                            disabled={loading}
+                        >
+                            {loading ? (
+                                <div className="w-fit flex items-center gap-2 justify-center">
+                                    <span>Logging out...</span>
+                                    <DynamicPhosphorIcon
+                                        iconName="CircleNotchIcon"
+                                        className="animate-spin"
+                                    />
+                                </div>
+                            ) : (
+                                "Yes, Logout"
+                            )}
+                        </button>
+                    </div>
+                </div>
+            </Modal>
+        </>
     );
 }

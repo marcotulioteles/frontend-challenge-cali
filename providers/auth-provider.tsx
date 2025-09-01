@@ -1,5 +1,5 @@
-// providers/auth-provider.tsx
 "use client";
+
 import {
     createContext,
     useContext,
@@ -10,6 +10,7 @@ import {
 } from "react";
 import { onIdTokenChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase/client";
+import { API_URL_MAP } from "@/helpers/api/api-url-map";
 
 type AuthState = {
     uid: string;
@@ -19,7 +20,7 @@ type AuthState = {
     refreshRoles: () => Promise<void>;
 };
 
-const Ctx = createContext<AuthState | null>(null);
+const Context = createContext<AuthState | null>(null);
 
 type Initial = { uid: string; email: string | null; roles: string[] };
 
@@ -37,16 +38,14 @@ export function AuthProvider({
     const firstMount = useRef(true);
 
     const refreshRoles = async () => {
-        console.log("Refreshing roles...");
         setLoading(true);
         try {
-            const res = await fetch("/api/users/me/roles", {
+            const res = await fetch(API_URL_MAP.users.me.roles, {
                 credentials: "include",
                 cache: "no-store",
             });
             if (res.ok) {
                 const data = await res.json();
-                console.log("Roles data: ", data);
                 const rolesValues = Object.values(
                     data.roles ?? {}
                 ) as unknown[];
@@ -65,16 +64,16 @@ export function AuthProvider({
     }, []);
 
     useEffect(() => {
-        const unsub = onIdTokenChanged(auth, async (u) => {
+        const unsubscribe = onIdTokenChanged(auth, async (u) => {
             const newUid = u?.uid ?? "";
             if (newUid !== uid) {
                 setUid(newUid);
                 setEmail(u?.email ?? null);
-                await refreshRoles(); // 🔁 pull the latest roles for the new user
+                await refreshRoles();
             }
             firstMount.current = false;
         });
-        return () => unsub();
+        return () => unsubscribe();
     }, [uid]);
 
     const value = useMemo(
@@ -82,11 +81,11 @@ export function AuthProvider({
         [uid, email, roles, loading]
     );
 
-    return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+    return <Context.Provider value={value}>{children}</Context.Provider>;
 }
 
 export function useAuth() {
-    const ctx = useContext(Ctx);
+    const ctx = useContext(Context);
     if (!ctx) throw new Error("useAuth must be used within <AuthProvider>");
     return ctx;
 }

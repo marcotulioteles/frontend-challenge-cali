@@ -1,27 +1,87 @@
 "use client";
 
-import { useState } from "react";
-import { Pagination } from "../ui/pagination";
+import { useEffect, useState } from "react";
 import { DynamicPhosphorIcon } from "./dynamic-icon";
+import AltPagination from "../ui/alt-pagination";
+import { TransactionStatus } from "@/types/transaction.model";
+import { API_URL_MAP } from "@/helpers/api/api-url-map";
+import LoadingContent from "./loading-content";
 
-interface TransactionTableProps {
-    transactions: {
-        id: string;
-        cardholderName: string;
-        cardNumber: string;
+type TransactionItem = {
+    id: string;
+    userId: string;
+    cardholderName: string;
+    amount: number;
+    card: {
+        last4: string;
         expirationDate: string;
-        value: number;
-        status: string;
-    }[];
-}
+    };
+    status: TransactionStatus;
+    createdAt: number;
+};
 
-export default function TransactionTable({
-    transactions,
-}: TransactionTableProps) {
-    const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(50);
+type Cursor = { beforeTs: string; beforeId: string } | null;
 
-    const totalItems = 1250;
+export default function TransactionTable() {
+    const pageSize = 20;
+
+    const [transactions, setTransactions] = useState<TransactionItem[]>([]);
+    const [total, setTotal] = useState(0);
+    const [nextCursor, setNextCursor] = useState<Cursor>(null);
+    const [history, setHistory] = useState<Cursor[]>([null]); // first page has null cursor
+    const [pageIdx, setPageIdx] = useState(0); // 0-based index in history
+    const currentPage = pageIdx + 1;
+
+    const [loading, setLoading] = useState(true);
+
+    async function fetchPage(cursor: Cursor) {
+        setLoading(true);
+        try {
+            const querySearch = new URLSearchParams({
+                limit: String(pageSize),
+            });
+            if (cursor?.beforeTs) querySearch.set("beforeTs", cursor.beforeTs);
+            if (cursor?.beforeId) querySearch.set("beforeId", cursor.beforeId);
+
+            const res = await fetch(
+                `${API_URL_MAP.transactions.list}?${querySearch}`,
+                {
+                    credentials: "include",
+                    cache: "no-store",
+                }
+            );
+            const data = await res.json();
+
+            setTransactions(data.transactions || []);
+            setNextCursor(data.nextCursor || null);
+            setTotal(data.total || 0);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        fetchPage(history[pageIdx]);
+    }, []);
+
+    const onNext = async () => {
+        if (!nextCursor) return;
+        const newHistory = history.slice(0, pageIdx + 1).concat(nextCursor);
+        setHistory(newHistory);
+        setPageIdx(pageIdx + 1);
+        await fetchPage(nextCursor);
+    };
+
+    const onPrev = async () => {
+        if (pageIdx === 0) return;
+        const newPageIdx = pageIdx - 1;
+        setPageIdx(newPageIdx);
+        await fetchPage(history[newPageIdx]);
+    };
+
+    const hasPrev = pageIdx > 0;
+    const hasNext = Boolean(nextCursor);
+
     return (
         <>
             <div className="grid w-full max-w-7xl pb-10 px-6 xl:px-0">
@@ -32,7 +92,7 @@ export default function TransactionTable({
                     <span>Value</span>
                     <span>Status</span>
                 </header>
-                {transactions.length > 0 ? (
+                {transactions.length > 0 && !loading ? (
                     transactions.map((transaction) => (
                         <div
                             key={transaction.id}
@@ -48,13 +108,13 @@ export default function TransactionTable({
                                 <strong className="font-light text-xs text-gray-500 block md:hidden">
                                     Card Number
                                 </strong>
-                                {transaction.cardNumber}
+                                {transaction.card.last4}
                             </span>
                             <span className="tracking-widest">
                                 <strong className="font-light text-xs text-gray-500 block md:hidden">
                                     Expiration Date
                                 </strong>
-                                {transaction.expirationDate}
+                                {transaction.card.expirationDate}
                             </span>
                             <span className="text-base tracking-widest">
                                 <strong className="font-light text-xs text-gray-500 block md:hidden">
@@ -63,7 +123,7 @@ export default function TransactionTable({
                                 {new Intl.NumberFormat("pt-BR", {
                                     style: "currency",
                                     currency: "BRL",
-                                }).format(transaction.value)}
+                                }).format(transaction.amount)}
                             </span>
                             <div>
                                 <span className="font-light text-xs text-gray-500 mb-2 block md:hidden tracking-widest">
@@ -81,7 +141,7 @@ export default function TransactionTable({
                             </div>
                         </div>
                     ))
-                ) : (
+                ) : transactions.length === 0 && !loading ? (
                     <div className="w-full min-h-80 flex items-center justify-around">
                         <legend className="flex flex-col items-center justify-center gap-4 text-gray-400">
                             <DynamicPhosphorIcon
@@ -92,19 +152,24 @@ export default function TransactionTable({
                             <span>You don't have any transactions yet.</span>
                         </legend>
                     </div>
+                ) : (
+                    <div className="w-full min-h-80 flex items-center justify-around">
+                        <LoadingContent />
+                    </div>
                 )}
             </div>
-            <div className="w-full max-w-7xl mx-auto px-6 xl:px-0">
-                <Pagination
-                    page={page}
+            {/* <div className="w-full max-w-7xl mx-auto px-6 xl:px-0">
+                <AltPagination
                     pageSize={pageSize}
-                    totalItems={totalItems}
-                    onPageChange={(newPage) => setPage(newPage)}
-                    onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-                    pageSizeOptions={[10, 25, 50, 100]}
-                    maxButtons={3} // tweak to show more/less neighbors
+                    total={total}
+                    currentPage={currentPage}
+                    onPrev={onPrev}
+                    onNext={onNext}
+                    hasPrev={hasPrev}
+                    hasNext={hasNext}
+                    loading={loading}
                 />
-            </div>
+            </div> */}
         </>
     );
 }
